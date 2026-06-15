@@ -110,12 +110,14 @@ def test_fetch_watchlist_data_rejects_missing_api_key():
         fetch_watchlist_data(api_key="", watchlist=["AAPL"])
 
 def test_get_recent_market_dates_returns_expected_dates():
+    today = date.today()
+
     result = stock_api.get_recent_market_dates(days_back=3)
 
     expected = [
-        date.today().isoformat(),
-        (date.today() - timedelta(days=1)).isoformat(),
-        (date.today() - timedelta(days=2)).isoformat(),
+        today.isoformat(),
+        (today - timedelta(days=1)).isoformat(),
+        (today - timedelta(days=2)).isoformat(),
     ]
 
     assert result == expected
