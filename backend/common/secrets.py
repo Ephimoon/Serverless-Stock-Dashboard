@@ -11,9 +11,9 @@ class SecretError(Exception):
 
 
 def get_stock_api_key() -> str:
-    local_key = os.environ.get("STOCK_API_KEY", "")
+    local_key = os.environ.get("STOCK_API_KEY", "").strip()
 
-    if local_key and local_key not in ["placeholder", "your_key_here", "your_stock_api_key_here"]:
+    if local_key and local_key not in {"placeholder", "your_key_here", "your_stock_api_key_here"}:
         return local_key
 
     if not SECRET_NAME:
