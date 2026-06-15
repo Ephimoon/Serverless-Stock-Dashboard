@@ -10,7 +10,10 @@ def lambda_handler(event, context):
     if request_method == "OPTIONS":
         return json_response(200, {"message": "cors preflight ok"})
 
-    print("GET /movers request received")
+    if request_method != "GET":
+        return json_response(405, {"message": "method not allowed"})
+
+    print(f"{request_method} /movers request received")
 
     try:
         movers = get_recent_movers(limit=7)

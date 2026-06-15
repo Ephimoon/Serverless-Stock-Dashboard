@@ -28,6 +28,7 @@ def test_build_winner_item_formats_dynamodb_record():
 
     item = build_winner_item(winner)
 
+    assert item["record_type"] == "DAILY_WINNER"
     assert item["date"] == "2026-06-12"
     assert item["ticker"] == "NVDA"
     assert item["percent_change"] == Decimal("3.41")

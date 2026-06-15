@@ -86,7 +86,7 @@ def fetch_watchlist_data(api_key: str, watchlist: list[str] | None = None) -> li
     if not api_key:
         raise StockApiError("missing stock API key")
 
-    tickers = watchlist or WATCHLIST
+    tickers = WATCHLIST if watchlist is None else watchlist
     market_dates = get_recent_market_dates()
     valid_records: list[dict[str, Any]] = []
 

@@ -4,6 +4,7 @@ from decimal import Decimal
 from typing import Any
 
 import boto3
+from boto3.dynamodb.conditions import Key
 
 from common.config import AWS_REGION, TABLE_NAME
 
@@ -35,14 +36,12 @@ def normalize_mover_item(item: dict[str, Any]) -> dict[str, Any]:
 def get_recent_movers(limit: int = 7, table=None) -> list[dict[str, Any]]:
     table = table or get_table()
 
-    response = table.scan()
+    response = table.query(
+        KeyConditionExpression=Key("record_type").eq("DAILY_WINNER"),
+        ScanIndexForward=False,
+        Limit=limit,
+    )
+
     items = response.get("Items", [])
 
-    while "LastEvaluatedKey" in response:
-        response = table.scan(ExclusiveStartKey=response["LastEvaluatedKey"])
-        items.extend(response.get("Items", []))
-
-    normalized_items = [normalize_mover_item(item) for item in items]
-    sorted_items = sorted(normalized_items, key=lambda item: item["date"], reverse=True)
-
-    return sorted_items[:limit]
+    return [normalize_mover_item(item) for item in items]

@@ -176,3 +176,8 @@ def test_fetch_daily_open_close_raises_request_exception(monkeypatch):
 def test_fetch_daily_open_close_raises_when_no_retries_allowed():
     with pytest.raises(StockApiError, match="failed to fetch AAPL"):
         fetch_daily_open_close("AAPL", "2026-06-12", "fake-key", max_retries=0)
+
+def test_fetch_watchlist_data_respects_empty_watchlist():
+    results = fetch_watchlist_data(api_key="fake-key", watchlist=[])
+
+    assert results == []

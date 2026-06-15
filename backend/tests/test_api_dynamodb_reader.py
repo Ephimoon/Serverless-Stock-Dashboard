@@ -3,20 +3,24 @@ from decimal import Decimal
 from api import dynamodb_reader
 from api.dynamodb_reader import get_recent_movers, normalize_mover_item, to_float
 
-class FakeTable:
-    def __init__(self, responses):
-        self.responses = responses
-        self.scan_calls = []
 
-    def scan(self, **kwargs):
-        self.scan_calls.append(kwargs)
-        return self.responses.pop(0)
+class FakeTable:
+    def __init__(self, response):
+        self.response = response
+        self.query_kwargs = None
+
+    def query(self, **kwargs):
+        self.query_kwargs = kwargs
+        return self.response
+
 
 def test_to_float_converts_decimal():
     assert to_float(Decimal("3.41")) == 3.41
 
+
 def test_to_float_converts_regular_number():
     assert to_float("3.41") == 3.41
+
 
 def test_normalize_mover_item_formats_api_record():
     item = {
@@ -37,6 +41,7 @@ def test_normalize_mover_item_formats_api_record():
         "direction": "up",
     }
 
+
 def test_normalize_mover_item_defaults_direction_from_percent_change():
     item = {
         "date": "2026-06-12",
@@ -49,74 +54,30 @@ def test_normalize_mover_item_defaults_direction_from_percent_change():
 
     assert result["direction"] == "down"
 
-def test_get_recent_movers_sorts_by_date_and_limits_results():
+
+def test_get_recent_movers_queries_daily_winners_with_limit():
     fake_table = FakeTable(
-        [
-            {
-                "Items": [
-                    {
-                        "date": "2026-06-10",
-                        "ticker": "AAPL",
-                        "percent_change": Decimal("1.2"),
-                        "close_price": Decimal("100"),
-                        "direction": "up",
-                    },
-                    {
-                        "date": "2026-06-12",
-                        "ticker": "NVDA",
-                        "percent_change": Decimal("3.4"),
-                        "close_price": Decimal("142"),
-                        "direction": "up",
-                    },
-                    {
-                        "date": "2026-06-11",
-                        "ticker": "TSLA",
-                        "percent_change": Decimal("-2.5"),
-                        "close_price": Decimal("94"),
-                        "direction": "down",
-                    },
-                ]
-            }
-        ]
-    )
-
-    result = get_recent_movers(limit=2, table=fake_table)
-
-    assert [item["date"] for item in result] == ["2026-06-12", "2026-06-11"]
-
-def test_get_recent_movers_reads_paginated_scan_results():
-    fake_table = FakeTable(
-        [
-            {
-                "Items": [
-                    {
-                        "date": "2026-06-10",
-                        "ticker": "AAPL",
-                        "percent_change": Decimal("1.2"),
-                        "close_price": Decimal("100"),
-                        "direction": "up",
-                    }
-                ],
-                "LastEvaluatedKey": {"date": "2026-06-10"},
-            },
-            {
-                "Items": [
-                    {
-                        "date": "2026-06-11",
-                        "ticker": "MSFT",
-                        "percent_change": Decimal("2.2"),
-                        "close_price": Decimal("200"),
-                        "direction": "up",
-                    }
-                ]
-            },
-        ]
+        {
+            "Items": [
+                {
+                    "record_type": "DAILY_WINNER",
+                    "date": "2026-06-12",
+                    "ticker": "NVDA",
+                    "percent_change": Decimal("3.4"),
+                    "close_price": Decimal("142"),
+                    "direction": "up",
+                }
+            ]
+        }
     )
 
     result = get_recent_movers(limit=7, table=fake_table)
 
-    assert len(result) == 2
-    assert fake_table.scan_calls[1] == {"ExclusiveStartKey": {"date": "2026-06-10"}}
+    assert len(result) == 1
+    assert result[0]["ticker"] == "NVDA"
+    assert fake_table.query_kwargs["ScanIndexForward"] is False
+    assert fake_table.query_kwargs["Limit"] == 7
+
 
 def test_get_table_returns_configured_dynamodb_table(monkeypatch):
     class FakeDynamoDBResource:

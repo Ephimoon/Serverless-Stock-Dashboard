@@ -66,3 +66,10 @@ def test_api_handler_returns_500_when_reader_fails(monkeypatch):
 
     assert response["statusCode"] == 500
     assert body["message"] == "could not load movers"
+
+def test_api_handler_returns_405_for_unsupported_method():
+    response = handler.lambda_handler({"httpMethod": "POST"}, None)
+    body = json.loads(response["body"])
+
+    assert response["statusCode"] == 405
+    assert body["message"] == "method not allowed"

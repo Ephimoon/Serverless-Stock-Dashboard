@@ -19,6 +19,7 @@ def to_decimal(value: float) -> Decimal:
 
 def build_winner_item(winner: dict[str, Any]) -> dict[str, Any]:
     return {
+        "record_type": "DAILY_WINNER",
         "date": winner["date"],
         "ticker": winner["ticker"],
         "percent_change": to_decimal(winner["percent_change"]),
