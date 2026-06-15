@@ -29,7 +29,8 @@ def build_winner_item(winner: dict[str, Any]) -> dict[str, Any]:
     }
 
 def save_winner(winner: dict[str, Any], table=None) -> dict[str, Any]:
-    table = table or get_table()
+    if table is None:
+        table = get_table()
     item = build_winner_item(winner)
 
     table.put_item(Item=item)
