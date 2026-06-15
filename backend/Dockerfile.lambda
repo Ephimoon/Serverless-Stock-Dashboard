@@ -1,0 +1,11 @@
+FROM public.ecr.aws/lambda/python:3.12
+
+COPY requirements.txt ${LAMBDA_TASK_ROOT}
+
+RUN pip install --no-cache-dir -r requirements.txt --target ${LAMBDA_TASK_ROOT}
+
+COPY common ${LAMBDA_TASK_ROOT}/common
+COPY ingest ${LAMBDA_TASK_ROOT}/ingest
+COPY api ${LAMBDA_TASK_ROOT}/api
+
+CMD ["ingest.handler.lambda_handler"]

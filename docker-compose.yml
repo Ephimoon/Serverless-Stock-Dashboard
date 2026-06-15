@@ -1,0 +1,119 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_API_BASE_URL=http://localhost:3000
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run dev -- --host 0.0.0.0
+
+  frontend-preview:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+
+  frontend-build:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: npm run build
+
+  ingest-lambda:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.lambda
+    platform: linux/amd64
+    ports:
+      - "9000:8080"
+    env_file:
+      - .env
+    command: ["ingest.handler.lambda_handler"]
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /var/task
+          ignore:
+            - __pycache__/
+            - "*.pyc"
+            - ".pytest_cache/"
+            - "venv/"
+            - ".venv/"
+
+  api-lambda:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.lambda
+    platform: linux/amd64
+    ports:
+      - "9001:8080"
+    env_file:
+      - .env
+    command: ["api.handler.lambda_handler"]
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend
+          target: /var/task
+          ignore:
+            - __pycache__/
+            - "*.pyc"
+            - ".pytest_cache/"
+            - "venv/"
+            - ".venv/"
+
+  cdk:
+    build:
+      context: ./infrastructure
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./infrastructure:/app
+      - /app/node_modules
+      - ./frontend:/frontend
+      - ~/.aws:/root/.aws:ro
+    environment:
+      - AWS_PROFILE=${AWS_PROFILE:-default}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+    command: npx cdk synth
+
+  cdk-bootstrap:
+    build:
+      context: ./infrastructure
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./infrastructure:/app
+      - /app/node_modules
+      - ./frontend:/frontend
+      - ~/.aws:/root/.aws:ro
+    environment:
+      - AWS_PROFILE=${AWS_PROFILE:-default}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+    command: npx cdk bootstrap
+
+  cdk-deploy:
+    build:
+      context: ./infrastructure
+      dockerfile: Dockerfile
+    working_dir: /app
+    volumes:
+      - ./infrastructure:/app
+      - /app/node_modules
+      - ./frontend:/frontend
+      - ~/.aws:/root/.aws:ro
+    environment:
+      - AWS_PROFILE=${AWS_PROFILE:-default}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+    command: npx cdk deploy
