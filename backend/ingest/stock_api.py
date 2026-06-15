@@ -83,27 +83,32 @@ def fetch_daily_open_close(
 
 
 def fetch_watchlist_data(api_key: str, watchlist: list[str] | None = None) -> list[dict[str, Any]]:
+    api_key = (api_key or "").strip()
+
     if not api_key:
         raise StockApiError("missing stock API key")
 
     tickers = WATCHLIST if watchlist is None else watchlist
+
+    if not tickers:
+        return []
+
     market_dates = get_recent_market_dates()
-    valid_records: list[dict[str, Any]] = []
 
-    for ticker in tickers:
-        ticker_was_fetched = False
+    for market_date in market_dates:
+        valid_records: list[dict[str, Any]] = []
 
-        for market_date in market_dates:
+        for ticker in tickers:
             try:
                 record = fetch_daily_open_close(ticker=ticker, market_date=market_date, api_key=api_key)
                 valid_records.append(record)
-                ticker_was_fetched = True
-                break
 
             except StockApiError as error:
-                print(f"failed to fetch {ticker} for {market_date}, trying next date if available. error: {error}")
+                print(f"failed to fetch {ticker} for {market_date}. error: {error}")
 
-        if not ticker_was_fetched:
-            print(f"failed to fetch {ticker}, continuing with remaining watchlist")
+        if valid_records:
+            return valid_records
 
-    return valid_records
+        print(f"no valid records for {market_date}, trying previous market date")
+
+    return []

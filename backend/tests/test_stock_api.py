@@ -181,3 +181,70 @@ def test_fetch_watchlist_data_respects_empty_watchlist():
     results = fetch_watchlist_data(api_key="fake-key", watchlist=[])
 
     assert results == []
+
+def test_fetch_watchlist_data_uses_one_market_date(monkeypatch):
+    def fake_fetch_daily_open_close(ticker, market_date, api_key):
+        if market_date == "2026-06-12" and ticker == "AAPL":
+            raise StockApiError("fake failure")
+
+        return {
+            "date": market_date,
+            "ticker": ticker,
+            "open_price": 100,
+            "close_price": 101,
+        }
+
+    monkeypatch.setattr(stock_api, "fetch_daily_open_close", fake_fetch_daily_open_close)
+    monkeypatch.setattr(stock_api, "get_recent_market_dates", lambda days_back=7: ["2026-06-12", "2026-06-11"])
+
+    results = fetch_watchlist_data(api_key="fake-key", watchlist=["AAPL", "NVDA"])
+
+    assert results == [
+        {
+            "date": "2026-06-12",
+            "ticker": "NVDA",
+            "open_price": 100,
+            "close_price": 101,
+        }
+    ]
+
+
+def test_fetch_watchlist_data_falls_back_only_when_no_tickers_succeed(monkeypatch):
+    def fake_fetch_daily_open_close(ticker, market_date, api_key):
+        if market_date == "2026-06-12":
+            raise StockApiError("market closed")
+
+        return {
+            "date": market_date,
+            "ticker": ticker,
+            "open_price": 100,
+            "close_price": 101,
+        }
+
+    monkeypatch.setattr(stock_api, "fetch_daily_open_close", fake_fetch_daily_open_close)
+    monkeypatch.setattr(stock_api, "get_recent_market_dates", lambda days_back=7: ["2026-06-12", "2026-06-11"])
+
+    results = fetch_watchlist_data(api_key="fake-key", watchlist=["AAPL", "NVDA"])
+
+    assert [record["date"] for record in results] == ["2026-06-11", "2026-06-11"]
+    assert [record["ticker"] for record in results] == ["AAPL", "NVDA"]
+
+
+def test_fetch_watchlist_data_rejects_blank_api_key():
+    with pytest.raises(StockApiError, match="missing stock API key"):
+        fetch_watchlist_data(api_key="   ", watchlist=["AAPL"])
+
+def test_fetch_watchlist_data_returns_empty_when_all_dates_fail(monkeypatch):
+    def fake_fetch_daily_open_close(ticker, market_date, api_key):
+        raise StockApiError("no data")
+
+    monkeypatch.setattr(stock_api, "fetch_daily_open_close", fake_fetch_daily_open_close)
+    monkeypatch.setattr(
+        stock_api,
+        "get_recent_market_dates",
+        lambda days_back=7: ["2026-06-12", "2026-06-11"],
+    )
+
+    results = fetch_watchlist_data(api_key="fake-key", watchlist=["AAPL", "NVDA"])
+
+    assert results == []
