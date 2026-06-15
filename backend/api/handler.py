@@ -1,21 +1,39 @@
-import json
-from datetime import datetime, timezone
+from api.dynamodb_reader import get_recent_movers
+from common.responses import json_response
 
 
 def lambda_handler(event, context):
-    print("GET /movers request received")
-    print("Returned placeholder movers response")
+    method = event.get("requestContext", {}).get("http", {}).get("method")
+    legacy_method = event.get("httpMethod")
+    request_method = method or legacy_method or "GET"
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Allow-Methods": "GET,OPTIONS"
-        },
-        "body": json.dumps({
-            "items": [],
-            "message": "API Lambda placeholder is working",
-            "timestamp": datetime.now(timezone.utc).isoformat()
-        })
-    }
+    if request_method == "OPTIONS":
+        return json_response(200, {"message": "cors preflight ok"})
+
+    print("GET /movers request received")
+
+    try:
+        movers = get_recent_movers(limit=7)
+
+        print(f"returned {len(movers)} mover records")
+
+        return json_response(
+            200,
+            {
+                "items": movers,
+                "count": len(movers),
+            },
+            headers={
+                "X-Result-Count": str(len(movers)),
+            },
+        )
+
+    except Exception as error:
+        print(f"failed to load movers: {error}")
+
+        return json_response(
+            500,
+            {
+                "message": "could not load movers",
+            },
+        )
