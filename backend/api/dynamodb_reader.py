@@ -15,9 +15,6 @@ def get_table():
 
 
 def to_float(value: Any) -> float:
-    if isinstance(value, Decimal):
-        return float(value)
-
     return float(value)
 
 
