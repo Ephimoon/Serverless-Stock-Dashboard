@@ -6,5 +6,6 @@ Serverless Stock Dashboard tracks a watchlist of tech stocks with an automated A
 Run:
 
     docker compose build
-    docker compose down
+    docker compose up
+    docker compose run --rm backend-tests
     docker compose down --remove-orphans
