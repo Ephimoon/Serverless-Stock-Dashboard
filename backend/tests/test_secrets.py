@@ -103,3 +103,10 @@ def test_get_stock_api_key_wraps_boto3_errors(monkeypatch):
 
     with pytest.raises(SecretError, match="failed to load stock API key"):
         get_stock_api_key()
+
+def test_get_stock_api_key_trims_local_env_key(monkeypatch):
+    monkeypatch.setenv("STOCK_API_KEY", "  local-key  ")
+
+    result = get_stock_api_key()
+
+    assert result == "local-key"
