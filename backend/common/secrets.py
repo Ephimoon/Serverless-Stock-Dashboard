@@ -31,13 +31,14 @@ def get_stock_api_key() -> str:
             secret_payload = json.loads(secret_string)
 
             for key_name in ["STOCK_API_KEY", "MASSIVE_API_KEY", "apiKey"]:
-                if secret_payload.get(key_name):
-                    return secret_payload[key_name]
+                value = secret_payload.get(key_name)
+                if value:
+                    return str(value).strip()
 
             raise SecretError("secret did not contain a supported API key field")
 
         except json.JSONDecodeError:
-            return secret_string
+            return secret_string.strip()
 
     except Exception as error:
         raise SecretError(f"failed to load stock API key: {error}") from error
