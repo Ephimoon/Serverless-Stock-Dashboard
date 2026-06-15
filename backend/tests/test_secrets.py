@@ -110,3 +110,28 @@ def test_get_stock_api_key_trims_local_env_key(monkeypatch):
     result = get_stock_api_key()
 
     assert result == "local-key"
+
+def test_get_stock_api_key_trims_json_secret_value(monkeypatch):
+    monkeypatch.delenv("STOCK_API_KEY", raising=False)
+
+    def fake_client(service_name, region_name):
+        return FakeSecretsManagerClient('{"STOCK_API_KEY": "  secret-key  "}')
+
+    monkeypatch.setattr(secrets.boto3, "client", fake_client)
+
+    result = get_stock_api_key()
+
+    assert result == "secret-key"
+
+
+def test_get_stock_api_key_trims_raw_secret_string(monkeypatch):
+    monkeypatch.delenv("STOCK_API_KEY", raising=False)
+
+    def fake_client(service_name, region_name):
+        return FakeSecretsManagerClient("  raw-secret-key  ")
+
+    monkeypatch.setattr(secrets.boto3, "client", fake_client)
+
+    result = get_stock_api_key()
+
+    assert result == "raw-secret-key"
