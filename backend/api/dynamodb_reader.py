@@ -30,8 +30,8 @@ def normalize_mover_item(item: dict[str, Any]) -> dict[str, Any]:
 
 
 def get_recent_movers(limit: int = 7, table=None) -> list[dict[str, Any]]:
-    table = table or get_table()
-
+    if table is None:
+        table = get_table()
     response = table.query(
         KeyConditionExpression=Key("record_type").eq("DAILY_WINNER"),
         ScanIndexForward=False,
