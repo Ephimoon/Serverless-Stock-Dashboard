@@ -40,13 +40,13 @@ export class InfrastructureStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.DESTROY,
     });
 
-    const stockApiSecret = new secretsmanager.Secret(this, 'StockApiSecret', {
-      secretName: 'stock-dashboard/api-key',
-      description: 'Massive stock API key for the serverless stock dashboard',
-      generateSecretString: {
-        excludePunctuation: true,
-      },
-    });
+    const stockApiSecretName = 'stock-dashboard/api-key';
+
+    const stockApiSecret = secretsmanager.Secret.fromSecretNameV2(
+      this,
+      'StockApiSecret',
+      stockApiSecretName,
+    );
 
     const ingestionLogGroup = new logs.LogGroup(this, 'IngestionLogGroup', {
       logGroupName: `/aws/lambda/${projectName}-ingestion`,
@@ -62,7 +62,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     const ingestionEnvironment = {
       TABLE_NAME: moversTable.tableName,
-      SECRET_NAME: stockApiSecret.secretName,
+      SECRET_NAME: stockApiSecretName,
       MASSIVE_BASE_URL: 'https://api.massive.com',
       LOOKBACK_DAYS: '4',
     };
@@ -210,7 +210,7 @@ export class InfrastructureStack extends cdk.Stack {
     });
 
     new cdk.CfnOutput(this, 'SecretName', {
-      value: stockApiSecret.secretName,
+      value: stockApiSecretName,
       description: 'Secrets Manager secret name for the stock API key',
     });
 
