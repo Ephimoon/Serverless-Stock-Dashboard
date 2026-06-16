@@ -214,3 +214,12 @@ def test_decode_cursor_rejects_non_string_key_values():
 
     with pytest.raises(dynamodb_reader.InvalidCursorError):
         dynamodb_reader.decode_cursor(cursor)
+
+def test_decode_cursor_rejects_wrong_record_type():
+    cursor = dynamodb_reader.encode_cursor({
+        "record_type": "OTHER",
+        "date": "2026-06-15",
+    })
+
+    with pytest.raises(dynamodb_reader.InvalidCursorError):
+        dynamodb_reader.decode_cursor(cursor)
