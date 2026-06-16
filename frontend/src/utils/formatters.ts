@@ -1,4 +1,4 @@
-import type { MomentumStats, MoverRecord } from "../types/mover";
+import type { MomentumStats, MoverDirection, MoverRecord, WatchlistScore } from "../types/mover";
 
 export const watchlist = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA"];
 
@@ -38,14 +38,51 @@ export function formatNumber(value: number): string {
   }).format(value);
 }
 
-export function getTickerClass(record: MoverRecord): string {
-  return record.direction === "up" ? "positive" : "negative";
+export function getMoverDirection(record: MoverRecord): MoverDirection {
+  return record.direction === "down" || record.percent_change < 0 ? "down" : "up";
 }
 
-export function getBarWidth(record: MoverRecord, records: MoverRecord[]): string {
-  const maxMove = Math.max(...records.map((item) => Math.abs(item.percent_change)), 1);
-  const width = Math.max((Math.abs(record.percent_change) / maxMove) * 100, 6);
-  return `${width}%`;
+export function getTickerClass(record: MoverRecord | WatchlistScore): string {
+  const direction = "percent_change" in record ? getMoverDirection(record) : record.direction;
+  return direction === "down" ? "negative" : "positive";
+}
+
+export function getBarWidth(value: number, maxValue: number): string {
+  const width = maxValue > 0 ? (Math.abs(value) / maxValue) * 100 : 0;
+  return `${Math.max(width, value === 0 ? 0 : 8)}%`;
+}
+
+function getWatchlistLeaderboard(records: MoverRecord[]): WatchlistScore[] {
+  const scores = watchlist.map((ticker) => {
+    const tickerRecords = records.filter((record) => record.ticker === ticker);
+    const latestTickerRecord = tickerRecords[0] ?? null;
+    const bestMove = tickerRecords.reduce(
+      (best, record) => Math.max(best, Math.abs(record.percent_change)),
+      0,
+    );
+
+    return {
+      ticker,
+      wins: tickerRecords.length,
+      bestMove,
+      latestMove: latestTickerRecord?.percent_change ?? null,
+      latestDate: latestTickerRecord?.date ?? null,
+      latestClose: latestTickerRecord?.close_price ?? null,
+      direction: latestTickerRecord ? getMoverDirection(latestTickerRecord) : null,
+    };
+  });
+
+  return scores.sort((first, second) => {
+    if (second.wins !== first.wins) {
+      return second.wins - first.wins;
+    }
+
+    if (second.bestMove !== first.bestMove) {
+      return second.bestMove - first.bestMove;
+    }
+
+    return watchlist.indexOf(first.ticker) - watchlist.indexOf(second.ticker);
+  });
 }
 
 export function calculateMomentum(records: MoverRecord[]): MomentumStats {
@@ -60,8 +97,8 @@ export function calculateMomentum(records: MoverRecord[]): MomentumStats {
       : currentBiggest;
   }, null);
 
-  const gainDays = records.filter((record) => record.direction === "up").length;
-  const lossDays = records.filter((record) => record.direction === "down").length;
+  const gainDays = records.filter((record) => getMoverDirection(record) === "up").length;
+  const lossDays = records.filter((record) => getMoverDirection(record) === "down").length;
   const averageAbsoluteMove = records.length
     ? records.reduce((total, record) => total + Math.abs(record.percent_change), 0) / records.length
     : 0;
@@ -75,7 +112,7 @@ export function calculateMomentum(records: MoverRecord[]): MomentumStats {
     (first, second) => second[1] - first[1],
   )[0] ?? [null, 0];
 
-  let currentStreakTicker: string | null = latestMover?.ticker ?? null;
+  const currentStreakTicker: string | null = latestMover?.ticker ?? null;
   let currentStreakCount = 0;
 
   if (currentStreakTicker) {
@@ -107,5 +144,6 @@ export function calculateMomentum(records: MoverRecord[]): MomentumStats {
     currentStreakTicker,
     currentStreakCount,
     marketMood,
+    leaderboard: getWatchlistLeaderboard(records),
   };
 }

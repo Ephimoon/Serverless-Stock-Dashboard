@@ -16,6 +16,16 @@ export interface MoversApiResponse {
   has_more: boolean;
 }
 
+export interface WatchlistScore {
+  ticker: string;
+  wins: number;
+  bestMove: number;
+  latestMove: number | null;
+  latestDate: string | null;
+  latestClose: number | null;
+  direction: MoverDirection | null;
+}
+
 export interface MomentumStats {
   latestMover: MoverRecord | null;
   biggestMover: MoverRecord | null;
@@ -27,4 +37,5 @@ export interface MomentumStats {
   currentStreakTicker: string | null;
   currentStreakCount: number;
   marketMood: "Bullish" | "Bearish" | "Mixed" | "No data";
+  leaderboard: WatchlistScore[];
 }
