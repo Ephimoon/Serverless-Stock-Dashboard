@@ -37,8 +37,7 @@ export class InfrastructureStack extends cdk.Stack {
         type: dynamodb.AttributeType.STRING,
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      removalPolicy: cdk.RemovalPolicy.DESTROY,
-    });
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
 
     const stockApiSecretName = 'stock-dashboard/api-key';
 
