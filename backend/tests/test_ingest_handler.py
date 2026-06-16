@@ -79,6 +79,19 @@ def test_ingest_handler_returns_502_when_stock_api_fails(monkeypatch):
     assert response["statusCode"] == 502
     assert body["message"] == "stock API request failed"
 
+def test_ingest_handler_returns_429_when_rate_limited(monkeypatch):
+    def fake_fetch_watchlist_data(api_key):
+        raise handler.RateLimitError("stock API rate limit reached")
+
+    monkeypatch.setattr(handler, "get_stock_api_key", lambda: "fake-key")
+    monkeypatch.setattr(handler, "fetch_watchlist_data", fake_fetch_watchlist_data)
+
+    response = handler.lambda_handler({}, None)
+    body = json.loads(response["body"])
+
+    assert response["statusCode"] == 429
+    assert body["message"] == "stock API rate limit reached"
+
 
 def test_ingest_handler_returns_500_when_unexpected_error_happens(monkeypatch):
     def fake_save_winner(winner):

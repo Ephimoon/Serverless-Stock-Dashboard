@@ -3,7 +3,7 @@ import json
 from common.secrets import SecretError, get_stock_api_key
 from ingest.dynamodb_writer import save_winner
 from ingest.mover_calculator import select_top_mover
-from ingest.stock_api import StockApiError, fetch_watchlist_data
+from ingest.stock_api import RateLimitError, StockApiError, fetch_watchlist_data
 
 
 def lambda_handler(event, context):
@@ -46,6 +46,16 @@ def lambda_handler(event, context):
             "statusCode": 500,
             "body": json.dumps({
                 "message": "could not load stock API key"
+            }),
+        }
+
+    except RateLimitError as error:
+        print(f"rate limit error: {error}")
+
+        return {
+            "statusCode": 429,
+            "body": json.dumps({
+                "message": "stock API rate limit reached"
             }),
         }
 
