@@ -7,6 +7,7 @@ venv/
 .DS_Store
 *.log
 tests/
+.pytest_cache/
 .coverage
 coverage.xml
 htmlcov/
