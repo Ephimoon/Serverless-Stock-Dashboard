@@ -45,6 +45,12 @@ def decode_cursor(cursor: str | None) -> dict[str, Any] | None:
     if not isinstance(decoded, dict):
         raise InvalidCursorError("invalid pagination cursor")
 
+    if set(decoded.keys()) != {"record_type", "date"}:
+        raise InvalidCursorError("invalid pagination cursor")
+
+    if not isinstance(decoded.get("record_type"), str) or not isinstance(decoded.get("date"), str):
+        raise InvalidCursorError("invalid pagination cursor")
+
     return decoded
 
 
