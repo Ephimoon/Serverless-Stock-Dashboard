@@ -74,3 +74,21 @@ def test_get_table_returns_configured_dynamodb_table(monkeypatch):
     table = dynamodb_writer.get_table()
 
     assert table == {"table_name": dynamodb_writer.TABLE_NAME}
+
+def test_save_winner_uses_default_table_when_table_not_provided(monkeypatch):
+    fake_table = FakeTable()
+
+    monkeypatch.setattr(dynamodb_writer, "get_table", lambda: fake_table)
+
+    winner = {
+        "date": "2026-06-12",
+        "ticker": "AAPL",
+        "percent_change": 1.5,
+        "close_price": 200.0,
+        "direction": "up",
+    }
+
+    saved_item = save_winner(winner)
+
+    assert fake_table.saved_item == saved_item
+    assert saved_item["ticker"] == "AAPL"

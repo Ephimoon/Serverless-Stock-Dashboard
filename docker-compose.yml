@@ -91,8 +91,10 @@ services:
     volumes:
       - ./infrastructure:/app
       - /app/node_modules
+      - ./backend:/backend
       - ./frontend:/frontend
       - ~/.aws:/root/.aws:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - AWS_PROFILE=${AWS_PROFILE:-default}
       - AWS_REGION=${AWS_REGION:-us-east-1}
@@ -107,7 +109,9 @@ services:
       - ./infrastructure:/app
       - /app/node_modules
       - ./frontend:/frontend
+      - ./backend:/backend
       - ~/.aws:/root/.aws:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - AWS_PROFILE=${AWS_PROFILE:-default}
       - AWS_REGION=${AWS_REGION:-us-east-1}
@@ -121,8 +125,10 @@ services:
     volumes:
       - ./infrastructure:/app
       - /app/node_modules
+      - ./backend:/backend
       - ./frontend:/frontend
       - ~/.aws:/root/.aws:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - AWS_PROFILE=${AWS_PROFILE:-default}
       - AWS_REGION=${AWS_REGION:-us-east-1}

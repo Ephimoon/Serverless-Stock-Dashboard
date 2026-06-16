@@ -21,6 +21,7 @@ coverage.xml
 
 # AWS CDK
 cdk.out/
+response.json
 
 # Docker and system
 .DS_Store
