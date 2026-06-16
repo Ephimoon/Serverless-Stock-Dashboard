@@ -11,11 +11,14 @@ def get_query_params(event):
 
 
 def get_limit(params):
-    raw_limit = params.get("limit", str(DEFAULT_LIMIT))
+    raw_limit = params.get("limit")
+
+    if raw_limit is None or str(raw_limit).strip() == "":
+        raw_limit = str(DEFAULT_LIMIT)
 
     try:
         limit = int(raw_limit)
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         raise ValueError("limit must be a number") from error
 
     if limit < 1 or limit > MAX_LIMIT:
