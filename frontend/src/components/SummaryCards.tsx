@@ -6,7 +6,7 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ stats }: SummaryCardsProps) {
-  const latestClass = stats.latestMover?.direction === "up" ? "positive" : "negative";
+  const latestClass = stats.latestMover ? (stats.latestMover.direction === "up" ? "positive" : "negative") : undefined;
   const latestTicker = stats.latestMover?.ticker ?? "No data";
   const latestMove = stats.latestMover ? formatPercent(stats.latestMover.percent_change) : "0.00%";
   const biggestTicker = stats.biggestMover?.ticker ?? "No data";
