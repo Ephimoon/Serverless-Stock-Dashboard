@@ -18,8 +18,6 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const loadMovers = useCallback(async (showRefreshState = false) => {
-    const controller = new AbortController();
-
     if (showRefreshState) {
       setIsRefreshing(true);
     } else {
@@ -29,7 +27,7 @@ function App() {
     setErrorMessage(null);
 
     try {
-      const response = await fetchMovers(7, controller.signal);
+      const response = await fetchMovers(7);
       setRecords(response.items);
       setLastUpdated(new Date());
     } catch (error) {
@@ -39,12 +37,10 @@ function App() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-
-    return () => controller.abort();
   }, []);
 
   useEffect(() => {
-    void loadMovers();
+    loadMovers();
   }, [loadMovers]);
 
   const stats = useMemo(() => calculateMomentum(records), [records]);
