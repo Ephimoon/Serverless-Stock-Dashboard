@@ -112,6 +112,7 @@ services:
       - ./frontend:/frontend
       - ./backend:/backend
       - ~/.aws:/root/.aws:ro
+      # SECURITY: mounting docker.sock grants the container root-equivalent access to the host; use only on trusted machines.
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - AWS_PROFILE=${AWS_PROFILE:-default}
