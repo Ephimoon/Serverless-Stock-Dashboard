@@ -39,7 +39,7 @@ export function SummaryCards({ stats }: SummaryCardsProps) {
       <article className="summary-card">
         <span>Average move</span>
         <h2>{formatNumber(stats.averageAbsoluteMove)}%</h2>
-        <p>{stats.mostFrequentTicker ?? "No ticker"} leads with {stats.mostFrequentWins} win</p>
+        <p>{stats.mostFrequentTicker ?? "No ticker"} leads with {stats.mostFrequentWins} {stats.mostFrequentWins === 1 ? "win" : "wins"}</p>
         <small>
           {stats.currentStreakTicker
             ? `${stats.currentStreakTicker} current streak: ${stats.currentStreakCount}`
