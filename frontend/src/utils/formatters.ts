@@ -3,7 +3,7 @@ import type { MomentumStats, MoverRecord } from "../types/mover";
 export const watchlist = ["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "NVDA"];
 
 export function formatDate(value: string): string {
-  const date = new Date(`${value}T00:00:00`);
+  const date = new Date(`${value}T00:00:00Z`);
 
   if (Number.isNaN(date.getTime())) {
     return value;
@@ -13,6 +13,7 @@ export function formatDate(value: string): string {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "UTC",
   }).format(date);
 }
 
