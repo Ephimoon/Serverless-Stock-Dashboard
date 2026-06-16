@@ -198,3 +198,19 @@ def test_decode_cursor_rejects_non_dict_payload():
 
     with pytest.raises(InvalidCursorError, match="invalid pagination cursor"):
         decode_cursor(cursor)
+
+def test_decode_cursor_rejects_missing_required_keys():
+    cursor = dynamodb_reader.encode_cursor({"record_type": "DAILY_WINNER"})
+
+    with pytest.raises(dynamodb_reader.InvalidCursorError):
+        dynamodb_reader.decode_cursor(cursor)
+
+
+def test_decode_cursor_rejects_non_string_key_values():
+    cursor = dynamodb_reader.encode_cursor({
+        "record_type": "DAILY_WINNER",
+        "date": 123,
+    })
+
+    with pytest.raises(dynamodb_reader.InvalidCursorError):
+        dynamodb_reader.decode_cursor(cursor)

@@ -38,6 +38,7 @@ export class InfrastructureStack extends cdk.Stack {
       },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
+    });
 
     const stockApiSecretName = 'stock-dashboard/api-key';
 
@@ -81,6 +82,7 @@ export class InfrastructureStack extends cdk.Stack {
       memorySize: 512,
       environment: ingestionEnvironment,
       logGroup: ingestionLogGroup,
+    });
 
     const apiFunction = new lambda.DockerImageFunction(this, 'ApiFunction', {
       functionName: `${projectName}-api`,
