@@ -78,11 +78,10 @@ export class InfrastructureStack extends cdk.Stack {
         cmd: ['ingest.handler.lambda_handler'],
       }),
       architecture: lambda.Architecture.X86_64,
-      timeout: cdk.Duration.seconds(120),
+      timeout: cdk.Duration.minutes(10),
       memorySize: 512,
       environment: ingestionEnvironment,
       logGroup: ingestionLogGroup,
-    });
 
     const apiFunction = new lambda.DockerImageFunction(this, 'ApiFunction', {
       functionName: `${projectName}-api`,
