@@ -32,6 +32,7 @@ function isMoversApiResponse(value: unknown): value is MoversApiResponse {
     && response.items.every(isMoverRecord)
     && typeof response.count === "number"
     && typeof response.limit === "number"
+    && (typeof response.next_cursor === "string" || response.next_cursor === null)
     && typeof response.has_more === "boolean";
 }
 
