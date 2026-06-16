@@ -1,0 +1,378 @@
+:root {
+  color: #e5edf8;
+  background: #07111f;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --bg: #07111f;
+  --panel: rgba(15, 28, 48, 0.84);
+  --panel-strong: rgba(22, 39, 67, 0.96);
+  --border: rgba(148, 163, 184, 0.2);
+  --text: #e5edf8;
+  --muted: #91a4bd;
+  --positive: #22c55e;
+  --negative: #fb7185;
+  --accent: #38bdf8;
+  --accent-strong: #60a5fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(56, 189, 248, 0.2), transparent 34rem),
+    radial-gradient(circle at top right, rgba(34, 197, 94, 0.14), transparent 30rem),
+    var(--bg);
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 0.85rem 1.1rem;
+  color: #04111f;
+  background: linear-gradient(135deg, var(--accent), var(--positive));
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 3rem;
+}
+
+.hero-card,
+.panel,
+.summary-card,
+.state-card {
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, var(--panel-strong), var(--panel));
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 1.25rem;
+  align-items: stretch;
+  border-radius: 28px;
+  padding: 1.5rem;
+}
+
+.hero-copy {
+  padding: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.6rem;
+  color: var(--accent);
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  max-width: 780px;
+  margin-bottom: 0.75rem;
+  font-size: clamp(2.4rem, 7vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.06em;
+}
+
+h2 {
+  margin-bottom: 0.45rem;
+  letter-spacing: -0.03em;
+}
+
+.hero-description {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 1.06rem;
+  line-height: 1.7;
+}
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.25rem;
+}
+
+.hero-meta span,
+.ticker-pill,
+.direction-badge {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.42rem 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--muted);
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.hero-action-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 22px;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.hero-action-card p,
+.hero-action-card strong {
+  margin: 0;
+}
+
+.hero-action-card p {
+  color: var(--muted);
+}
+
+.hero-action-card strong {
+  font-size: 1.8rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.summary-card {
+  min-height: 160px;
+  border-radius: 22px;
+  padding: 1.25rem;
+}
+
+.summary-card span,
+.summary-card small {
+  color: var(--muted);
+}
+
+.summary-card h2 {
+  margin: 0.55rem 0 0.3rem;
+  font-size: 2rem;
+}
+
+.summary-card p {
+  margin-bottom: 0.45rem;
+  color: var(--text);
+  font-weight: 900;
+}
+
+.highlight-card {
+  background: linear-gradient(150deg, rgba(56, 189, 248, 0.22), rgba(34, 197, 94, 0.14));
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 1rem;
+}
+
+.dashboard-main,
+.dashboard-side {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel,
+.state-card {
+  border-radius: 24px;
+  padding: 1.25rem;
+}
+
+.section-heading p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.bar-list {
+  display: grid;
+  gap: 0.9rem;
+  margin-top: 1.25rem;
+}
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 130px 1fr 90px;
+  gap: 1rem;
+  align-items: center;
+}
+
+.bar-label {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.bar-label span {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.bar-track {
+  height: 12px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+}
+
+.bar-value {
+  text-align: right;
+  font-weight: 900;
+}
+
+.positive {
+  color: var(--positive) !important;
+}
+
+.negative {
+  color: var(--negative) !important;
+}
+
+.bar-fill.positive,
+.direction-badge.positive {
+  background: rgba(34, 197, 94, 0.18);
+  color: var(--positive) !important;
+}
+
+.bar-fill.negative,
+.direction-badge.negative {
+  background: rgba(251, 113, 133, 0.2);
+  color: var(--negative) !important;
+}
+
+.bar-fill.positive {
+  background: linear-gradient(90deg, var(--positive), #86efac);
+}
+
+.bar-fill.negative {
+  background: linear-gradient(90deg, var(--negative), #fda4af);
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+}
+
+th,
+td {
+  border-bottom: 1px solid var(--border);
+  padding: 1rem 0.75rem;
+  text-align: left;
+}
+
+th {
+  color: var(--muted);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ticker-symbol {
+  color: #dbeafe;
+  font-weight: 950;
+}
+
+.watchlist-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.ticker-pill.active {
+  border-color: rgba(56, 189, 248, 0.7);
+  color: var(--text);
+  background: rgba(56, 189, 248, 0.16);
+}
+
+.insight-panel p {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.state-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.state-card p {
+  margin-bottom: 0;
+  color: var(--muted);
+}
+
+.error-card {
+  border-color: rgba(251, 113, 133, 0.5);
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 auto;
+  border: 4px solid rgba(148, 163, 184, 0.18);
+  border-top-color: var(--accent);
+  border-radius: 999px;
+  animation: spin 900ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 920px) {
+  .hero-card,
+  .dashboard-grid,
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bar-row {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+  }
+
+  .bar-value {
+    text-align: left;
+  }
+}
