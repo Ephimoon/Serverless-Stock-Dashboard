@@ -137,9 +137,9 @@ export class InfrastructureStack extends cdk.Stack {
       websiteErrorDocument: 'index.html',
       publicReadAccess: true,
       blockPublicAccess: new s3.BlockPublicAccess({
-        blockPublicAcls: false,
+        blockPublicAcls: true,
+        ignorePublicAcls: true,
         blockPublicPolicy: false,
-        ignorePublicAcls: false,
         restrictPublicBuckets: false,
       }),
       removalPolicy: cdk.RemovalPolicy.DESTROY,
