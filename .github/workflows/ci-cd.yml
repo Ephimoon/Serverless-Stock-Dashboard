@@ -31,7 +31,7 @@ jobs:
         run: pip install -r requirements-dev.txt
 
       - name: Run backend tests
-        run: pytest -v --cov=ingest --cov=api --cov=common --cov-report=term-missing
+        run: PYTHONPATH=. pytest -v --cov=ingest --cov=api --cov=common --cov-report=term-missing
 
   frontend-build:
     name: Frontend build
